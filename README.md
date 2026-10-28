@@ -7,7 +7,7 @@ An interactive portfolio for a Java / Spring Boot and MERN full stack engineer. 
 ## What's on the page
 
 - **Work:** 8 main projects with metrics, tech stack, live demo and GitHub links (MarketFlow, MeshPay, ReferBoard, CodeSage AI, Distributed Ticket Booking, TeamOS, CanvasHub, Cloud Storage)
-- **Smaller builds:** SCAIMS, Fitness Tracker, Train Ticket Booking, To-Do List
+- **Smaller builds:** CINÉPOP (3D popcorn site), SCAIMS, Fitness Tracker, Train Ticket Booking, To-Do List
 - **Experience:** Jellyfish Technologies, Harman Connected Services (client: Mercedes-Benz)
 - **Skills, education and certifications, contact**
 
