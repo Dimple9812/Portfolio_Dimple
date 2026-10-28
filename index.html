@@ -1,0 +1,790 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dimple Yadav Portfolio</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Dimple Yadav, Full Stack Software Engineer (Java, Spring Boot, MERN). An interactive portfolio tree whose fruits are her projects.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;700;800&display=swap">
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap">
+<style>
+/* Layout: one centred column. Interactive tree hero, then work cards, experience, skills, education, contact. */
+:root{
+  --bg:#FAF9F3; --ink:#141613; --ink-2:#4A5048; --muted:#7C8279; --line:#E4E4D8; --card:#FFFFFF;
+  --pill:#FFF1D6; --pill-ink:#8A4B00; --dot:#FF8A1F;
+  --rainbow:linear-gradient(90deg,#FF5A36,#FF9F1C,#F7C600,#2BB673,#2A7BFF,#7B4DFF);
+  --serif:"Instrument Serif",Georgia,"Times New Roman",serif;
+  --sans:"Satoshi","Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{overflow-x:clip}
+html{scroll-behavior:smooth;scroll-padding-top:88px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--bg)}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--ink);outline-offset:3px;border-radius:8px}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+/* ---------- Nav ---------- */
+.nav{position:fixed;top:env(safe-area-inset-top,0px);left:0;right:0;z-index:50;background:rgba(250,249,243,.72);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(228,228,216,.6)}
+.nav-in{display:flex;align-items:center;justify-content:space-between;gap:16px;height:68px;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px));max-width:1280px;margin:0 auto}
+.logo{font-family:var(--serif);font-size:32px;line-height:1;text-decoration:none;display:inline-flex;align-items:flex-end;gap:6px;letter-spacing:-.01em}
+.logo i{display:inline-block;width:10px;height:10px;background:var(--rainbow);border-radius:50% 0 50% 50%;transform:rotate(-45deg);margin-bottom:6px}
+.links{display:flex;gap:2px;padding:4px;background:#fff;border:1px solid var(--line);border-radius:999px;list-style:none;margin:0}
+.links a{display:block;padding:7px 16px;border-radius:999px;text-decoration:none;font-weight:500;font-size:15px;color:var(--ink-2);transition:background .2s,color .2s}
+.links a:hover,.links a.active{background:var(--pill);color:var(--pill-ink)}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border-radius:999px;font:700 15px/1 var(--sans);text-decoration:none;border:1.5px solid var(--ink);cursor:pointer;transition:transform .2s,box-shadow .2s,background .2s}
+.btn-dark{background:var(--ink);color:#fff}
+.btn-dark:hover{transform:translateY(-2px);box-shadow:0 8px 18px -8px rgba(20,22,19,.6)}
+.btn-light{background:#fff;color:var(--ink)}
+.btn-light:hover{background:var(--pill)}
+.btn svg{width:16px;height:16px}
+.nav .btn{padding:11px 20px}
+.burger{display:none;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:#fff;cursor:pointer;place-items:center}
+.burger span,.burger span::before,.burger span::after{display:block;width:18px;height:2px;background:var(--ink);border-radius:2px;position:relative;transition:transform .25s}
+.burger span::before,.burger span::after{content:"";position:absolute;left:0}
+.burger span::before{top:-6px}.burger span::after{top:6px}
+.burger[aria-expanded="true"] span{background:transparent}
+.burger[aria-expanded="true"] span::before{transform:translateY(6px) rotate(45deg)}
+.burger[aria-expanded="true"] span::after{transform:translateY(-6px) rotate(-45deg)}
+.menu{position:absolute;top:72px;right:max(16px,env(safe-area-inset-right,0px));left:max(16px,env(safe-area-inset-left,0px));background:#fff;border:1px solid var(--line);border-radius:22px;padding:10px;box-shadow:0 20px 40px -20px rgba(20,22,19,.3);display:grid;gap:2px}
+.menu a{padding:12px 16px;border-radius:14px;text-decoration:none;font-weight:500}
+.menu a:hover{background:var(--pill);color:var(--pill-ink)}
+.menu .btn{justify-content:center;margin-top:6px}
+@media (max-width:959px){.links,.nav-cta{display:none}.burger{display:grid}}
+@media (min-width:960px){.menu{display:none!important}}
+
+/* ---------- Hero ---------- */
+.hero{position:relative;padding-top:84px;padding-bottom:56px;text-align:center}
+#treeCanvas{position:absolute;left:0;top:0;pointer-events:none;z-index:2}
+.tree-wrap{position:relative;width:min(560px,100%);margin:0 auto;touch-action:pan-y;cursor:grab;user-select:none;-webkit-user-select:none}
+.tree-wrap:active{cursor:grabbing}
+.stage{width:100%;aspect-ratio:600/640;max-width:100%;position:relative}
+.stage::after{content:"";position:absolute;left:25%;width:50%;height:7%;top:91.8%;background:radial-gradient(closest-side,rgba(43,182,115,.32),rgba(139,197,63,.12) 60%,transparent);border-radius:50%}
+.fruits{position:absolute;inset:0;z-index:3;pointer-events:none}
+.fruit{position:absolute;left:0;top:0;width:var(--b,44px);display:flex;flex-direction:column;align-items:center;transform-origin:50% 0;pointer-events:auto;text-decoration:none;will-change:transform}
+.fruit:hover,.fruit:focus-visible{z-index:6;outline:none}
+.stem{width:2px;height:var(--stem,10px);background:var(--ink);border-radius:2px}
+.leaf{position:absolute;top:1px;left:50%;width:13px;height:7px;background:#2BB673;border-radius:0 100% 0 100%;transform:translateX(1px) rotate(-24deg);transform-origin:0 50%}
+.ball{position:relative;width:var(--b,44px);height:var(--b,44px);border-radius:50%;display:grid;place-items:center;
+  background:radial-gradient(circle at 36% 30%,var(--c1),var(--c2) 74%);color:var(--fi,#fff);
+  font:900 calc(var(--b,44px)*.34)/1 var(--sans);letter-spacing:-.02em;
+  box-shadow:inset -3px -5px 9px rgba(0,0,0,.16),0 7px 14px -6px rgba(20,22,19,.45);
+  transition:transform .3s cubic-bezier(.2,1.4,.4,1)}
+.ball::after{content:"";position:absolute;width:30%;height:20%;left:20%;top:13%;border-radius:50%;background:rgba(255,255,255,.75);transform:rotate(-30deg);filter:blur(.4px)}
+.fruit:hover .ball,.fruit:focus-visible .ball{transform:scale(1.2)}
+.fruit:focus-visible .ball{outline:3px solid var(--ink);outline-offset:4px}
+.tip{position:absolute;top:calc(100% + 10px);left:50%;transform:translate(-50%,4px);opacity:0;pointer-events:none;background:var(--ink);color:#fff;padding:9px 13px;border-radius:12px;white-space:nowrap;text-align:left;line-height:1.3;transition:opacity .2s,transform .2s;box-shadow:0 10px 24px -10px rgba(20,22,19,.6)}
+.tip b{display:block;font-size:14px;font-weight:700}
+.tip small{display:block;font-size:12px;color:#C9CDC4}
+.fruit.tl .tip{left:0;transform:translate(0,4px)}
+.fruit.tr .tip{left:auto;right:0;transform:translate(0,4px)}
+.fruit:hover .tip,.fruit:focus-visible .tip{opacity:1;transform:translate(-50%,0)}
+.fruit.tl:hover .tip,.fruit.tl:focus-visible .tip,.fruit.tr:hover .tip,.fruit.tr:focus-visible .tip{transform:translate(0,0)}
+
+.intro{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:18px;margin-top:6px}
+.tag{display:inline-flex;align-items:center;gap:10px;background:var(--pill);color:var(--pill-ink);font-weight:700;font-size:14px;padding:8px 16px;border-radius:999px}
+.tag i{width:8px;height:8px;border-radius:50%;background:var(--dot);position:relative}
+.tag i::after{content:"";position:absolute;inset:0;border-radius:50%;background:var(--dot);animation:pulse 1.8s ease-out infinite}
+@keyframes pulse{to{transform:scale(2.8);opacity:0}}
+.hi{margin:0;font-weight:500;color:var(--muted);font-size:17px}
+.headline{font-family:var(--serif);font-weight:400;font-size:clamp(34px,5.4vw,76px);line-height:1.04;letter-spacing:-.015em;margin:-6px 0 0;text-wrap:balance}
+@media (min-width:700px){.headline{white-space:nowrap}}
+.w{display:inline-block;transform-origin:0 100%;animation:wgrow .9s cubic-bezier(.2,1.25,.4,1) both;animation-delay:calc(250ms + var(--i)*110ms)}
+@keyframes wgrow{from{opacity:0;transform:translate(-.25em,.7em) scale(.3) rotate(-8deg)}}
+.grow{font-style:italic;background:var(--rainbow);-webkit-background-clip:text;background-clip:text;color:transparent;padding-right:.08em}
+.lede{max-width:620px;margin:0;color:var(--ink-2);font-size:18px;line-height:1.6;text-wrap:pretty}
+.ctas{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:6px}
+.skills-row{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 22px;list-style:none;padding:0;margin:8px 0 0;font-weight:500;color:var(--ink-2);font-size:15px}
+.skills-row li{display:inline-flex;gap:7px;align-items:center}
+.hint{font-size:13px;color:var(--muted);margin:0}
+.hint kbd{font:700 12px var(--sans);border:1px solid var(--line);background:#fff;border-radius:6px;padding:1px 6px}
+
+/* ---------- Sections ---------- */
+section.block{padding-block:72px}
+.eyebrow{font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+.h2{font-family:var(--serif);font-weight:400;font-size:clamp(36px,5vw,58px);line-height:1.05;letter-spacing:-.01em;margin:0;text-wrap:balance}
+.h2 em{font-style:italic}
+.sec-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;margin-bottom:36px}
+.sec-head p{max-width:440px;margin:0;color:var(--ink-2)}
+
+/* Work cards */
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+@media (max-width:860px){.grid{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:26px;display:flex;flex-direction:column;gap:16px;min-width:0;scroll-margin-top:96px;transition:border-color .25s,box-shadow .25s}
+.card:target{border-color:var(--ink);box-shadow:0 0 0 4px var(--pill)}
+.card-top{display:flex;gap:14px;align-items:center}
+.mini{flex:none;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;position:relative;background:radial-gradient(circle at 36% 30%,var(--c1),var(--c2) 74%);color:var(--fi,#fff);font:900 15px/1 var(--sans);box-shadow:inset -2px -4px 7px rgba(0,0,0,.15)}
+.mini::after{content:"";position:absolute;width:30%;height:20%;left:20%;top:13%;border-radius:50%;background:rgba(255,255,255,.7);transform:rotate(-30deg)}
+.card h3{font-family:var(--serif);font-weight:400;font-size:30px;line-height:1.05;margin:0}
+.card .kind{font-size:14px;color:var(--muted);font-weight:500;margin:2px 0 0}
+.card .sum{margin:0;color:var(--ink-2)}
+.card ul.pts{margin:0;padding:0;list-style:none;display:grid;gap:8px;font-size:15px}
+.card ul.pts li{display:grid;grid-template-columns:14px 1fr;gap:8px;color:var(--ink)}
+.card ul.pts li::before{content:"✦";font-size:11px;line-height:1.95;color:var(--c2)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;list-style:none;margin:0;padding:0}
+.chips li{font-size:12.5px;font-weight:500;padding:4px 10px;border-radius:999px;background:var(--bg);border:1px solid var(--line);color:var(--ink-2)}
+.card-links{margin-top:auto;display:flex;gap:10px;flex-wrap:wrap;padding-top:4px}
+.card-links a{display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:14px;padding:9px 16px;border-radius:999px;text-decoration:none;border:1.5px solid var(--ink)}
+.card-links a.live{background:var(--ink);color:#fff}
+.card-links a.live:hover{transform:translateY(-1px)}
+.card-links a.gh:hover{background:var(--pill)}
+.card-links svg{width:15px;height:15px}
+
+/* Smaller builds */
+.more{margin-top:56px}
+.more-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px 24px;flex-wrap:wrap;margin-bottom:20px}
+.more-head h3{font-family:var(--serif);font-weight:400;font-size:clamp(28px,3.4vw,36px);line-height:1.1;margin:0}
+.more-head p{margin:0;color:var(--ink-2)}
+.mgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+@media (max-width:1000px){.mgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.mgrid{grid-template-columns:minmax(0,1fr)}}
+.mcard{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.mcard h4{margin:0;font-size:18px;font-weight:700;line-height:1.25;display:flex;gap:9px;align-items:center}
+.mcard h4 i{flex:none;width:10px;height:10px;border-radius:50% 0 50% 50%;transform:rotate(-45deg);background:var(--seed)}
+.mcard .kind{margin:-4px 0 0;font-size:13px;color:var(--muted);font-weight:500}
+.mcard p.sum{margin:0;font-size:14.5px;color:var(--ink-2);line-height:1.55}
+.mcard .note{margin:0;font-size:12.5px;color:var(--muted)}
+.mcard .card-links{gap:8px}
+.mcard .card-links a{padding:7px 13px;font-size:13px}
+
+/* Experience */
+.xp{display:grid;gap:0;border-top:1px solid var(--line)}
+.job{display:grid;grid-template-columns:220px minmax(0,1fr);gap:24px;padding-block:28px;border-bottom:1px solid var(--line)}
+@media (max-width:720px){.job{grid-template-columns:minmax(0,1fr);gap:8px}}
+.when{font-weight:700;font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums;padding-top:6px}
+.job h3{font-family:var(--serif);font-weight:400;font-size:28px;line-height:1.1;margin:0}
+.job .org{margin:2px 0 12px;color:var(--ink-2);font-weight:500}
+.job h4{margin:16px 0 6px;font-size:14px;font-weight:700;letter-spacing:.02em}
+.job ul{margin:0;padding-left:18px;color:var(--ink-2);display:grid;gap:6px}
+.award{display:inline-flex;gap:8px;align-items:center;background:var(--pill);color:var(--pill-ink);font-weight:700;font-size:13px;padding:6px 12px;border-radius:999px;margin-top:14px}
+
+/* Skills */
+.sk{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+@media (max-width:900px){.sk{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.sk{grid-template-columns:minmax(0,1fr)}}
+.sk div{padding:22px;border-radius:20px;border:1px solid var(--line);background:var(--card)}
+.sk h3{margin:0 0 12px;font-size:15px;font-weight:700;display:flex;gap:8px;align-items:center}
+
+/* Education */
+.edu{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+@media (max-width:720px){.edu{grid-template-columns:minmax(0,1fr)}}
+.edu article{padding:24px;border-radius:20px;border:1px solid var(--line);background:var(--card)}
+.edu h3{font-family:var(--serif);font-weight:400;font-size:26px;line-height:1.1;margin:0 0 4px}
+.edu p{margin:0;color:var(--ink-2)}
+.edu .when{padding:0;margin-top:8px}
+.edu ul{list-style:none;padding:0;margin:0;display:grid;gap:14px}
+.edu li strong{display:block}
+
+/* Contact */
+.contact{text-align:center;padding-block:96px 56px}
+.contact .h2{font-size:clamp(40px,6vw,76px)}
+.contact .h2 em{background:var(--rainbow);-webkit-background-clip:text;background-clip:text;color:transparent;padding-right:.08em}
+.c-list{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:32px;list-style:none;padding:0}
+.c-item{display:inline-flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:8px 8px 8px 18px;font-weight:500;max-width:100%}
+.c-item span{user-select:all;-webkit-user-select:all;overflow-wrap:anywhere}
+.c-item button,.c-item a.go{border:0;background:var(--ink);color:#fff;font:700 13px var(--sans);padding:8px 14px;border-radius:999px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.foot{border-top:1px solid var(--line);padding-block:24px;color:var(--muted);font-size:14px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+@media (max-width:600px){
+  .hero{padding-top:76px}
+  .lede{font-size:16.5px}
+  section.block{padding-block:56px}
+  .card{padding:20px}
+}
+@media (prefers-reduced-motion:reduce){
+  .w{animation:none}
+  .tag i::after{animation:none}
+  html{scroll-behavior:auto}
+  .ball,.btn,.tip{transition:none}
+}
+</style>
+</head>
+<body>
+
+
+<header class="nav">
+  <div class="nav-in">
+    <a class="logo" href="#top" aria-label="dimple, home">dimple<i aria-hidden="true"></i></a>
+    <ul class="links">
+      <li><a href="#work" class="active">Work</a></li>
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#education">Education</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <a class="btn btn-dark nav-cta" href="#contact">Say hello →</a>
+    <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false" aria-controls="menu"><span></span></button>
+  </div>
+  <nav class="menu" id="menu" hidden>
+    <a href="#work">Work</a><a href="#experience">Experience</a><a href="#skills">Skills</a><a href="#education">Education</a><a href="#contact">Contact</a>
+    <a class="btn btn-dark" href="#contact">Say hello →</a>
+  </nav>
+</header>
+
+<main id="top">
+<section class="hero" id="hero">
+  <canvas id="treeCanvas" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <div class="tree-wrap" id="treeWrap">
+      <div class="stage" id="stage" role="img" aria-label="An illustrated tree whose leaves are letters spelling PORTFOLIO and whose eight fruits are Dimple's projects. Drag across it, click it or press S to shake the leaves loose."></div>
+      <div class="fruits" id="fruits"></div>
+    </div>
+
+    <div class="intro">
+      <span class="tag"><i aria-hidden="true"></i>Full Stack Engineer · Open to new roles</span>
+      <p class="hi">Hi, I'm Dimple.</p>
+      <h1 class="headline"><span class="w" style="--i:0">I</span> <span class="w" style="--i:1">build</span> <span class="w" style="--i:2">systems</span> <span class="w" style="--i:3">that</span> <span class="w grow" style="--i:4">grow</span> <span class="w" style="--i:5">with</span> <span class="w" style="--i:6">people.</span></h1>
+      <p class="lede">3.5 years building Java and Spring Boot microservices for Mercedes-Benz infotainment at Harman, plus eight full-stack builds on Kafka, Redis, PostgreSQL, MongoDB and React. Every fruit on this tree is a project. Give it a shake and see what falls out.</p>
+      <div class="ctas">
+        <a class="btn btn-dark" href="#work">Pick my work →</a>
+        <button class="btn btn-light" id="shakeBtn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>Shake the tree</button>
+      </div>
+      <ul class="skills-row">
+        <li><span style="color:#FF5A36">✦</span>Java &amp; Spring Boot</li>
+        <li><span style="color:#F7B500">✦</span>Microservices &amp; Kafka</li>
+        <li><span style="color:#2A7BFF">✦</span>React &amp; TypeScript</li>
+        <li><span style="color:#7B4DFF">✦</span>Node.js &amp; MongoDB</li>
+      </ul>
+      <p class="hint">Tap a fruit to open a project. Drag the tree, or press <kbd>S</kbd> to shake it.</p>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="work">
+  <div class="wrap">
+    <div class="sec-head">
+      <div><p class="eyebrow">Work · 8 projects</p><h2 class="h2">Every fruit, <em>picked</em>.</h2></div>
+      <p>Each project is deployed with tests that prove the hard part: no double bookings, no lost messages, no oversold stock. Numbers match the fruit on the tree.</p>
+    </div>
+    <div class="grid" id="cards"></div>
+    <div class="more">
+      <div class="more-head">
+        <h3>Smaller builds, also live</h3>
+        <p>Side projects from my GitHub, each with a working demo.</p>
+      </div>
+      <div class="mgrid" id="moreCards"></div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="experience">
+  <div class="wrap">
+    <div class="sec-head"><div><p class="eyebrow">Experience</p><h2 class="h2">Where I've <em>grown</em>.</h2></div></div>
+    <div class="xp">
+      <article class="job">
+        <div class="when">Aug 2026 – Sep 2026</div>
+        <div>
+          <h3>Java Developer</h3>
+          <p class="org">Jellyfish Technologies, India</p>
+          <ul>
+            <li>Worked on SCAIMS, a smart-city GIS platform that maps city assets with inspection, work-order and complaint workflows.</li>
+            <li>Worked with a PostgreSQL + PostGIS schema (8 entities, GIST spatial indexes) and JWT role-based access for city staff and citizens.</li>
+          </ul>
+        </div>
+      </article>
+      <article class="job">
+        <div class="when">Feb 2025 – Aug 2026</div>
+        <div>
+          <h3>Professional development &amp; independent projects</h3>
+          <p class="org">Career break</p>
+          <ul>
+            <li>Built and deployed eight full-stack systems across Java/Spring Boot microservices and the MERN stack, with AI-assisted coding.</li>
+            <li>Completed the Minor in Artificial Intelligence at IIT Ropar.</li>
+          </ul>
+        </div>
+      </article>
+      <article class="job">
+        <div class="when">Aug 2021 – Jan 2025</div>
+        <div>
+          <h3>Software Engineer</h3>
+          <p class="org">Harman Connected Services, India · Client: Mercedes-Benz</p>
+          <h4>Vehicle Infotainment Content Delivery Platform</h4>
+          <ul>
+            <li>Developed Spring Boot microservices (REST, Kafka, JUnit) for media streaming and navigation updates.</li>
+            <li>Improved caching for 40% faster media loading at 100K+ concurrent users.</li>
+            <li>Built CI/CD pipelines with GitHub Actions and AWS CDK, cutting deployment time by 50%.</li>
+            <li>Led a cross-functional Scrum team through bi-weekly releases, improving on-time delivery by 25%.</li>
+          </ul>
+          <h4>Vehicle Telematics &amp; Diagnostics Platform</h4>
+          <ul>
+            <li>Built a distributed Spring Boot telematics backend for real-time vehicle monitoring with 90% test coverage via TDD.</li>
+            <li>Scaled telemetry ingestion to 50K+ concurrent vehicles with alert latency under 2 seconds.</li>
+          </ul>
+          <span class="award">✦ Harman Innovator of the Quarter, Q3 2023</span>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="skills">
+  <div class="wrap">
+    <div class="sec-head"><div><p class="eyebrow">Skills</p><h2 class="h2">The <em>toolshed</em>.</h2></div></div>
+    <div class="sk">
+      <div><h3><span style="color:#FF5A36">✦</span>Languages</h3><ul class="chips"><li>Java</li><li>JavaScript (ES6+)</li><li>TypeScript</li><li>Python</li><li>SQL</li></ul></div>
+      <div><h3><span style="color:#FF9F1C">✦</span>Backend</h3><ul class="chips"><li>Spring Boot</li><li>Spring Security</li><li>Spring Cloud</li><li>Hibernate / JPA</li><li>Node.js</li><li>Express</li><li>REST APIs</li><li>GraphQL</li><li>Microservices</li><li>Apache Kafka</li><li>Socket.IO</li><li>Yjs (CRDT)</li><li>JWT</li></ul></div>
+      <div><h3><span style="color:#F7B500">✦</span>Frontend</h3><ul class="chips"><li>React</li><li>Next.js</li><li>Angular</li><li>Redux Toolkit</li><li>TanStack Query</li><li>Tailwind CSS</li><li>dnd-kit</li><li>Recharts</li><li>Monaco Editor</li><li>Accessibility</li><li>Responsive design</li></ul></div>
+      <div><h3><span style="color:#2BB673">✦</span>Data</h3><ul class="chips"><li>PostgreSQL</li><li>pgvector</li><li>PostGIS</li><li>MongoDB</li><li>Mongoose</li><li>Redis</li></ul></div>
+      <div><h3><span style="color:#2A7BFF">✦</span>Cloud &amp; DevOps</h3><ul class="chips"><li>Docker</li><li>Kubernetes</li><li>AWS Lambda &amp; EC2</li><li>AWS CDK</li><li>GitHub Actions</li><li>Jenkins</li><li>CI/CD</li><li>Vercel</li><li>Maven</li><li>Gradle</li></ul></div>
+      <div><h3><span style="color:#7B4DFF">✦</span>Testing &amp; practice</h3><ul class="chips"><li>JUnit</li><li>Testcontainers</li><li>Vitest</li><li>Testing Library</li><li>Playwright</li><li>TDD</li><li>Agile / Scrum</li><li>Distributed systems</li><li>Gen AI tools</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="education">
+  <div class="wrap">
+    <div class="sec-head"><div><p class="eyebrow">Education &amp; certifications</p><h2 class="h2">Roots.</h2></div></div>
+    <div class="edu">
+      <article>
+        <ul>
+          <li><strong>Minor in Artificial Intelligence</strong><p>Indian Institute of Technology (IIT) Ropar · part-time</p><p class="when">Nov 2024 – Dec 2025</p></li>
+          <li><strong>B.Tech, Information Technology</strong><p>Shri Ramswaroop Memorial College of Engineering &amp; Management, Lucknow</p><p class="when">Aug 2017 – Aug 2021</p></li>
+        </ul>
+      </article>
+      <article>
+        <ul>
+          <li><strong>ISTQB Certification</strong><p>International Software Testing Qualifications Board</p><p class="when">Aug 2024</p></li>
+          <li><strong>Java Advanced Certification</strong><p>CETPA Infotech Pvt. Ltd., Lucknow</p><p class="when">Jul 2021 – Sep 2021</p></li>
+        </ul>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="contact" id="contact">
+  <div class="wrap">
+    <p class="eyebrow">Contact</p>
+    <h2 class="h2">Let's build something that <em>grows</em>.</h2>
+    <ul class="c-list">
+      <li class="c-item"><span>dimple98y@gmail.com</span><a class="go" href="mailto:dimple98y@gmail.com">Email</a></li>
+      <li class="c-item"><span>+91 75189 85126</span><button type="button" data-copy="+917518985126">Copy</button></li>
+      <li class="c-item"><span>LinkedIn</span><a class="go" href="https://www.linkedin.com/in/dimple-yadav-1273861b5/" target="_blank" rel="noopener">Open ↗</a></li>
+      <li class="c-item"><span>GitHub · Dimple9812</span><a class="go" href="https://github.com/Dimple9812" target="_blank" rel="noopener">Open ↗</a></li>
+    </ul>
+  </div>
+</section>
+<div class="wrap"><footer class="foot"><span>© 2026 Dimple Yadav</span><span>Gurugram, India · Java · Spring Boot · MERN</span></footer></div>
+</main>
+
+<script>
+/* ============ Projects: edit here ============ */
+const PROJECTS = [
+  { n:'01', title:'MarketFlow', tag:'Event-driven marketplace', x:168, y:210, c:['#FF9A7A','#F0401F'],
+    demo:'https://marketflow-demo.vercel.app/', github:'https://github.com/Dimple9812/MV-E-commerce',
+    summary:'Customers buy from many sellers in one saga-based checkout, each seller ships their part, and buyers chat with sellers live. Three React apps: storefront, seller hub and admin.',
+    points:['Cut checkout p95 from 4.3 s to 1.1 s, with no oversold stock under load','0 of 50,066 live chat messages lost; typing, seen ticks and optimistic sends','11 microservices with 213 backend tests, plus 54 Vitest and 8 Playwright tests','Recharts dashboards for sellers and admins in a 71 kB gzip bundle'],
+    stack:['Java 21','Spring Boot','Kafka','PostgreSQL','Redis','React','TypeScript','Vite','Tailwind CSS','TanStack Query','WebSocket'] },
+  { n:'02', title:'MeshPay', tag:'Offline UPI payments · Prototype', x:312, y:118, c:['#FFE16B','#F2A900'], ink:'#3A2600',
+    demo:'https://meshpay-98r9.onrender.com/', github:'https://github.com/Dimple9812/UpiWithoutInternet',
+    summary:'Lets phones pay with no internet. Signed, encrypted payments hop device to device over a Bluetooth mesh until one phone gets online to settle them.',
+    points:['Payments signed with ECDSA and encrypted with AES-GCM','43 tests on real PostgreSQL and Redis, including a 20-upload duplicate storm, replays and cloned wallets','11-device mesh simulator to watch payments spread and settle'],
+    stack:['Java 21','Spring Boot','PostgreSQL','Redis','Docker','Testcontainers'] },
+  { n:'03', title:'ReferBoard', tag:'Referral-first job search', x:446, y:196, c:['#7FB2FF','#2A63F0'],
+    demo:'https://34-47-247-97.sslip.io/', github:'https://github.com/Dimple9812/referboard',
+    summary:'Finds relevant tech jobs, shows why you match, and drafts LLM referral messages so you get referred instead of applying cold.',
+    points:['13 Spring Boot services with 270+ backend tests','Matching that blends pgvector similarity with full-text search','Redis rate limit of 120 requests per minute per user'],
+    stack:['Java 21','Spring Cloud','Kafka','PostgreSQL','pgvector','Redis','React'] },
+  { n:'04', title:'CodeSage AI', tag:'AI code reviewer', x:236, y:352, c:['#B79BFF','#6B3DF0'],
+    demo:'https://codesage-ai-fqe7.onrender.com/', github:'https://github.com/Dimple9812/codesage-ai-code-reviewer',
+    summary:'Reviews GitHub repos and pull requests with PMD and an LLM, flagging bugs and security issues at the exact line with a fix, in a three-pane IDE-style workspace.',
+    points:['119 tests: 86 backend and 33 frontend with Testing Library','Reviews up to 60 files / 600 KB; HMAC-verified webhooks; AES-256-GCM encrypted tokens','Monaco viewer with inline finding markers, filters and before/after fix diffs','Safe Markdown rendering with no script or HTML injection'],
+    stack:['Java 21','Spring Boot','Spring Security OAuth2','PostgreSQL','React 19','TypeScript','Monaco Editor','TanStack Query'] },
+  { n:'05', title:'Distributed Ticket Booking', tag:'No double booking under load', x:462, y:360, c:['#7EE0B0','#14A06A'],
+    demo:'https://seatline-ticket-booking.onrender.com/', github:'https://github.com/Dimple9812/distributed-ticket-booking-system',
+    summary:'Books seats with no double booking under load, using Redis seat locks backed by PostgreSQL row locks, idempotent payments and a Kafka outbox.',
+    points:['50 buyers racing for 1 seat: exactly one wins, even with Redis down','About 276 req/s with 0 errors; Redis conflict catch raised from 6% to 100%','73 tests across locking, payments and the outbox'],
+    stack:['Java 21','Spring Boot 3','PostgreSQL','Redis','Kafka','React'] },
+  { n:'06', title:'TeamOS', tag:'Real-time team workspace', x:104, y:300, c:['#FFA8CF','#E0407A'],
+    demo:'https://teamos-liart.vercel.app/', github:'https://github.com/Dimple9812/TeamOS',
+    summary:'Team workspace with drag-and-drop Kanban, list and calendar views, live presence, comments, roles and AI task planning.',
+    points:['Changes reach teammates in p95 3.1 ms','Versioned edits (409 on conflict) and fractional ordering for drag-and-drop','73 tests: 44 server, 21 client and 8 end-to-end'],
+    stack:['React 19','TypeScript','Redux Toolkit','dnd-kit','Node.js','Express 5','Socket.IO','MongoDB'] },
+  { n:'07', title:'CanvasHub', tag:'Collaborative multi-user canvas', x:370, y:268, c:['#86E6F0','#0E9DB0'], ink:'#06323A',
+    demo:'https://canvashub-gold.vercel.app/', github:'https://github.com/Dimple9812/CanvasHub-collaborative-multi-user-canvas',
+    summary:'A shared whiteboard where several people draw and move shapes at once, with live cursors, offline edits that merge on reconnect, and share links.',
+    points:['Syncs to 9 collaborators in p95 2.7 ms','A 20-edit burst becomes 1 database write','View-only links enforced on the server; 47 tests including Playwright'],
+    stack:['React 19','TypeScript','Konva','Yjs (CRDT)','Node.js','Express 5','Socket.IO','MongoDB'] },
+  { n:'08', title:'Cloud Storage', tag:'MERN photo sharing', x:396, y:436, c:['#D2F28A','#6FAE1F'], ink:'#1F3300',
+    demo:null, github:'https://github.com/Dimple9812/Cloud-storage',
+    summary:'A MERN photo feed: an Express 5 REST API takes uploads through Multer, serves images from the ImageKit CDN and stores posts in MongoDB.',
+    points:['Express 5 REST API with Multer file uploads','Images on ImageKit CDN, posts in MongoDB via Mongoose'],
+    stack:['React 19','Vite','Node.js','Express 5','MongoDB','Mongoose','Multer','ImageKit'] },
+];
+
+/* Smaller builds with live demos: edit here */
+const MORE = [
+  { title:'SCAIMS', tag:'Smart-city asset management', seed:'#13B5C8',
+    demo:'https://scaims.onrender.com/', github:'https://github.com/Dimple9812/SCAIMS',
+    summary:'Maps a city\'s streetlights, roads, drains and parks on a GIS dashboard, with inspections, a Kanban work-order flow and citizen complaints routed by ward.',
+    note:'Free-tier server: the first load can take about a minute.',
+    stack:['Java 21','Spring Boot 3.3','PostGIS','React 18','Leaflet'] },
+  { title:'Fitness Tracker', tag:'AI fitness recommendations', seed:'#FF8A1F',
+    demo:'https://fitness-tracking-app-ten.vercel.app', github:'https://github.com/Dimple9812/Fitness-Tracking-app',
+    summary:'Logs workouts and suggests what to do next with AI. Built as Spring Boot microservices for users, activities and AI behind an API gateway.',
+    stack:['Spring Boot','Spring Cloud','Eureka','API Gateway','AWS'] },
+  { title:'Train Ticket Booking', tag:'Java booking backend', seed:'#7B4DFF',
+    demo:'https://java-backend-ticket-booking.vercel.app', github:'https://github.com/Dimple9812/Java-backend-Ticket-booking-',
+    summary:'Sign up, log in, search trains, then book, view and cancel seats.',
+    stack:['Java','Gradle'] },
+  { title:'To-Do List', tag:'React notes app', seed:'#2BB673',
+    demo:'https://todo-list-gules-alpha-73.vercel.app', github:'https://github.com/Dimple9812/TODO-LIST',
+    summary:'A quick notes-style to-do app for adding and checking off tasks.',
+    stack:['React','Vite'] },
+];
+
+/* ============ Cards ============ */
+(() => {
+  const ext = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>';
+  const gh = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.42c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.4-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5Z"/></svg>';
+  const esc = s => s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  document.getElementById('cards').innerHTML = PROJECTS.map(p => `
+    <article class="card" id="p-${p.n}" style="--c1:${p.c[0]};--c2:${p.c[1]};--fi:${p.ink||'#fff'}">
+      <div class="card-top"><span class="mini" aria-hidden="true">${p.n}</span>
+        <div><h3>${esc(p.title)}</h3><p class="kind">${esc(p.tag)}</p></div></div>
+      <p class="sum">${esc(p.summary)}</p>
+      <ul class="pts">${p.points.map(t => `<li>${esc(t)}</li>`).join('')}</ul>
+      <ul class="chips" aria-label="Tech stack">${p.stack.map(t => `<li>${esc(t)}</li>`).join('')}</ul>
+      <div class="card-links">
+        ${p.demo ? `<a class="live" href="${p.demo}" target="_blank" rel="noopener">${ext}Live demo</a>` : ''}
+        <a class="gh" href="${p.github}" target="_blank" rel="noopener">${gh}GitHub</a>
+      </div>
+    </article>`).join('');
+  document.getElementById('moreCards').innerHTML = MORE.map(p => `
+    <article class="mcard" style="--seed:${p.seed}">
+      <h4><i aria-hidden="true"></i>${esc(p.title)}</h4>
+      <p class="kind">${esc(p.tag)}</p>
+      <p class="sum">${esc(p.summary)}</p>
+      ${p.note ? `<p class="note">${esc(p.note)}</p>` : ''}
+      <ul class="chips" aria-label="Tech stack">${p.stack.map(t => `<li>${esc(t)}</li>`).join('')}</ul>
+      <div class="card-links">
+        <a class="live" href="${p.demo}" target="_blank" rel="noopener">${ext}Live demo</a>
+        <a class="gh" href="${p.github}" target="_blank" rel="noopener">${gh}GitHub</a>
+      </div>
+    </article>`).join('');
+})();
+
+/* ============ Nav ============ */
+(() => {
+  const burger = document.getElementById('burger'), menu = document.getElementById('menu');
+  const set = open => { menu.hidden = !open; burger.setAttribute('aria-expanded', open); burger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu'); };
+  burger.addEventListener('click', () => set(menu.hidden));
+  menu.addEventListener('click', e => { if (e.target.closest('a')) set(false); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') set(false); });
+  const links = [...document.querySelectorAll('.links a')];
+  const io = new IntersectionObserver(es => es.forEach(en => {
+    if (en.isIntersecting) links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + en.target.id));
+  }), { rootMargin: '-45% 0px -50% 0px' });
+  ['work','experience','skills','education','contact'].forEach(id => io.observe(document.getElementById(id)));
+  document.querySelectorAll('[data-copy]').forEach(b => b.addEventListener('click', () => {
+    const done = () => { b.textContent = 'Copied'; setTimeout(() => b.textContent = 'Copy', 1600); };
+    const fallback = () => { const r = document.createRange(); r.selectNodeContents(b.previousElementSibling); const s = getSelection(); s.removeAllRanges(); s.addRange(r); b.textContent = 'Selected'; setTimeout(() => b.textContent = 'Copy', 1600); };
+    try { navigator.clipboard.writeText(b.dataset.copy).then(done, fallback); } catch (e) { fallback(); }
+  }));
+})();
+
+/* ============ The tree ============ */
+(() => {
+  const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const hero = document.getElementById('hero'), wrap = document.getElementById('treeWrap'),
+        stage = document.getElementById('stage'), fruitsEl = document.getElementById('fruits'),
+        cv = document.getElementById('treeCanvas'), ctx = cv.getContext('2d');
+  const BX = 300, BY = 610, GROUND = 610;
+  const WORD = 'PORTFOLIO';
+  const COLORS = ['#FF5A36','#FF8A1F','#FFB400','#F7D000','#8BC53F','#2BB673','#0E8F5B','#13B5C8','#2A7BFF','#3D4FE0','#7B4DFF','#B04BE0'];
+  const INK = '#141613';
+  const rnd = (a, b) => a + Math.random() * (b - a);
+  const pick = a => a[Math.random() * a.length | 0];
+  const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+  const easeOutBack = x => { const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * (x - 1) ** 3 + c1 * (x - 1) ** 2; };
+
+  /* --- branches: [p0, p1, p2, p3, widthStart, widthEnd] in 600x640 tree space --- */
+  const BR = [
+    [[300,612],[296,520],[307,452],[300,382],30,14],   // trunk
+    [[300,382],[291,300],[310,220],[305,118],14,2],    // leader
+    [[300,402],[252,366],[200,332],[148,302],12,3],    // left low
+    [[301,420],[352,392],[412,372],[470,350],11,3],    // right low
+    [[301,346],[252,286],[203,244],[160,206],9,2],     // left mid
+    [[303,334],[360,284],[410,240],[452,194],9,2],     // right mid
+    [[304,262],[270,202],[242,152],[222,104],5,1],     // left high
+    [[306,246],[350,194],[380,152],[402,102],5,1],     // right high
+    [[148,302],[122,292],[100,272],[84,250],3,1],
+    [[470,350],[500,338],[520,318],[532,296],3,1],
+    [[160,206],[140,184],[122,170],[108,150],2,1],
+    [[452,194],[472,172],[490,160],[502,140],2,1],
+    [[305,130],[300,96],[290,74],[278,56],2,1],
+    [[305,152],[330,116],[348,94],[362,74],2,1],
+    [[236,350],[210,372],[178,384],[140,382],3,1],
+    [[372,384],[392,396],[410,404],[430,402],3,1],
+  ];
+  const bez = (b, t) => { const u = 1 - t; return [
+    u*u*u*b[0][0] + 3*u*u*t*b[1][0] + 3*u*t*t*b[2][0] + t*t*t*b[3][0],
+    u*u*u*b[0][1] + 3*u*u*t*b[1][1] + 3*u*t*t*b[2][1] + t*t*t*b[3][1]]; };
+  const sample = (b, N = 16) => { const pts = []; for (let i = 0; i <= N; i++) { const t = i / N, [x, y] = bez(b, t); pts.push({ x, y, w: b[4] + (b[5] - b[4]) * Math.pow(t, .85) }); } return pts; };
+  const branches = BR.map(b => sample(b));
+
+  /* --- fruits hang from an anchor; a twig joins each anchor to the nearest branch --- */
+  PROJECTS.forEach(p => {
+    p.ax = p.x; p.ay = p.y - 34;
+    let best = null, bd = Infinity;
+    branches.forEach((br, bi) => br.forEach(q => { if (bi === 0) return; const d = (q.x - p.ax) ** 2 + (q.y - p.ay) ** 2; if (d < bd) { bd = d; best = q; } }));
+    if (Math.sqrt(bd) > 3) {
+      const my = Math.min(best.y, p.ay) - 10;
+      branches.push(sample([[best.x, best.y], [best.x + (p.ax - best.x) * .35, my], [p.ax - (p.ax - best.x) * .15, my + 4], [p.ax, p.ay], Math.min(best.w, 4), 1.2], 10));
+    }
+  });
+
+  /* --- letter leaves --- */
+  const leaves = [];
+  const ph1 = rnd(0, 6.28), ph2 = rnd(0, 6.28), ph3 = rnd(0, 6.28);
+  for (let i = 0; i < 640; i++) {
+    const th = rnd(0, Math.PI * 2);
+    const edge = 1 + .08 * Math.sin(3 * th + ph1) + .06 * Math.sin(7 * th + ph2) + .05 * Math.sin(13 * th + ph3);
+    let r = Math.sqrt(Math.random()) * edge;
+    if (Math.random() < .03) r = rnd(1.02, 1.15) * edge;
+    const x = 300 + Math.cos(th) * 232 * r, y = 262 + Math.sin(th) * 212 * r;
+    const big = Math.random() < .12;
+    leaves.push({ hx: x, hy: y, r: Math.min(1.2, r), size: big ? rnd(26, 40) : rnd(9, 24), tilt: rnd(-.6, .6),
+      layer: i % 2, ph: rnd(0, 6.28), ch: pick(WORD), col: pick(COLORS),
+      state: 0, grow: RM ? 1 : -rnd(0, 1.1), x, y, vx: 0, vy: 0, rot: 0, vr: 0, t: 0, amp: .5, fq: .004 });
+  }
+
+  /* --- sprites --- */
+  const sprites = {}, SP = 64, FONT = `900 ${SP}px Satoshi, Manrope, system-ui, sans-serif`;
+  let ready = false;
+  function makeSprites() {
+    const g0 = document.createElement('canvas').getContext('2d'); g0.font = FONT;
+    [...new Set(WORD)].forEach(ch => {
+      const w = g0.measureText(ch).width, pad = 6, cw = w + pad * 2, chh = SP * 1.05 + pad * 2;
+      COLORS.forEach(col => {
+        const c = document.createElement('canvas'); c.width = Math.ceil(cw * 2); c.height = Math.ceil(chh * 2);
+        const g = c.getContext('2d'); g.scale(2, 2); g.font = FONT; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = col;
+        g.fillText(ch, cw / 2, chh / 2 + SP * .04);
+        sprites[ch + col] = { c, w: cw / SP, h: chh / SP };
+      });
+    });
+    ready = true;
+  }
+  const fontWait = Promise.race([
+    Promise.all([document.fonts.load(FONT), document.fonts.load(`800 ${SP}px Manrope`)]).catch(() => {}),
+    new Promise(r => setTimeout(r, 2500))
+  ]);
+  fontWait.then(() => document.fonts.ready).then(makeSprites, makeSprites);
+
+  /* --- fruits DOM --- */
+  const fruits = PROJECTS.map(p => {
+    const a = document.createElement('a');
+    a.className = 'fruit' + (p.x < 200 ? ' tl' : p.x > 400 ? ' tr' : '');
+    a.href = '#p-' + p.n;
+    a.setAttribute('aria-label', `Project ${p.n}: ${p.title}, ${p.tag}`);
+    a.style.cssText = `--c1:${p.c[0]};--c2:${p.c[1]};--fi:${p.ink || '#fff'}`;
+    a.innerHTML = `<span class="stem"></span><span class="leaf"></span><span class="ball">${p.n}</span><span class="tip"><b>${p.title}</b><small>${p.tag}</small></span>`;
+    a.addEventListener('pointerdown', e => e.stopPropagation());
+    fruitsEl.appendChild(a);
+    return { el: a, p, th: 0, om: 0 };
+  });
+
+  /* --- layout --- */
+  let dpr = 1, W = 0, H = 0, s = 1, ox = 0, oy = 0, B = 44;
+  function layout() {
+    dpr = Math.min(2, window.devicePixelRatio || 1);
+    const hr = hero.getBoundingClientRect(), sr = stage.getBoundingClientRect();
+    W = hr.width; H = hr.height; s = sr.width / 600; ox = sr.left - hr.left; oy = sr.top - hr.top;
+    cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+    cv.style.width = W + 'px'; cv.style.height = H + 'px';
+    B = clamp(46 * s, 30, 48);
+    fruitsEl.style.setProperty('--b', B + 'px');
+    fruitsEl.style.setProperty('--stem', Math.max(8, 34 * s - B / 2) + 'px');
+  }
+  new ResizeObserver(layout).observe(hero);
+  new ResizeObserver(layout).observe(stage);
+  layout();
+
+  /* --- physics state --- */
+  let ang = 0, av = 0, prevAv = 0, windX = .35, windTarget = .35, time = 0, last = 0, visible = true;
+  function bend(x, y) {
+    const h = clamp((GROUND - y) / 560, 0, 1), a = ang * Math.pow(h, 1.35);
+    if (!a) return [x, y, 0];
+    const dx = x - BX, dy = y - BY, c = Math.cos(a), sn = Math.sin(a);
+    return [BX + dx * c - dy * sn, BY + dx * sn + dy * c, a];
+  }
+  function leafPos(l, en) {
+    const amp = (.35 + en * 3.2) * (.4 + l.r);
+    const [x, y, a] = bend(l.hx + Math.sin(time * .0021 + l.ph) * amp, l.hy + Math.cos(time * .0017 + l.ph * 1.3) * amp * .5);
+    return [x, y, l.tilt + a + Math.sin(time * .003 + l.ph) * (.03 + en * .25)];
+  }
+  function regrow(l) { l.state = 0; l.grow = 0; l.ch = pick(WORD); l.col = pick(COLORS); }
+  function release(l, dir, en) {
+    const [x, y, rot] = leafPos(l, en);
+    const h = clamp((GROUND - y) / 560, 0, 1);
+    l.x = x; l.y = y; l.rot = rot; l.state = 1;
+    l.vx = clamp(av * h * 300, -4, 4) + windX * .6 + dir * rnd(.4, 1.6) + rnd(-.3, .3);
+    l.vy = rnd(-1.1, .2); l.vr = rnd(-.06, .06); l.amp = rnd(.3, .9); l.fq = rnd(.002, .005);
+  }
+  function shed(n, dir = 0) {
+    if (!ready) return;
+    const en = Math.min(1, Math.abs(av) * 60);
+    let done = 0, tries = 0;
+    while (done < n && tries++ < n * 40) {
+      const l = leaves[Math.random() * leaves.length | 0];
+      if (l.state !== 0 || l.grow < 1) continue;
+      if (Math.random() > Math.pow(Math.min(1, l.r), 2.2)) continue;
+      release(l, dir, en); done++;
+    }
+    if (dir) windTarget = dir * rnd(1.3, 2.1);
+  }
+
+  /* --- drawing --- */
+  function drawLeaf(l, x, y, rot, sc, alpha) {
+    const sp = sprites[l.ch + l.col]; if (!sp || sc <= 0) return;
+    const S = dpr * s * sc, c = Math.cos(rot) * S, sn = Math.sin(rot) * S;
+    ctx.setTransform(c, sn, -sn, c, dpr * (ox + s * x), dpr * (oy + s * y));
+    ctx.globalAlpha = alpha;
+    const w = sp.w * l.size, h = sp.h * l.size;
+    ctx.drawImage(sp.c, -w / 2, -h / 2, w, h);
+  }
+  function drawTreeLeaves(layer, en) {
+    for (const l of leaves) {
+      if (l.state !== 0 || l.layer !== layer || l.grow <= 0) continue;
+      const [x, y, rot] = leafPos(l, en);
+      drawLeaf(l, x, y, rot, l.grow >= 1 ? 1 : Math.max(0, easeOutBack(l.grow)), 1);
+    }
+  }
+  function drawBranches() {
+    ctx.setTransform(dpr * s, 0, 0, dpr * s, dpr * ox, dpr * oy);
+    ctx.globalAlpha = 1; ctx.strokeStyle = INK; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    for (const br of branches) {
+      let prev = bend(br[0].x, br[0].y);
+      for (let i = 1; i < br.length; i++) {
+        const cur = bend(br[i].x, br[i].y);
+        ctx.lineWidth = (br[i - 1].w + br[i].w) / 2;
+        ctx.beginPath(); ctx.moveTo(prev[0], prev[1]); ctx.lineTo(cur[0], cur[1]); ctx.stroke();
+        prev = cur;
+      }
+    }
+  }
+
+  /* --- loop --- */
+  function frame(now) {
+    requestAnimationFrame(frame);
+    const dt = last ? Math.min(50, now - last) : 16.67; last = now;
+    const f = dt / 16.67; time += dt;
+    // spring
+    prevAv = av;
+    av += (-0.014 * ang - 0.055 * av) * f;
+    ang += av * f;
+    if (ang > .22) { ang = .22; av *= -.3; } else if (ang < -.22) { ang = -.22; av *= -.3; }
+    const en = Math.min(1, Math.abs(av) * 60);
+    windX += (windTarget - windX) * .02 * f;
+    windTarget += (.35 - windTarget) * .008 * f;
+
+    // fruits (always update so they track the tree)
+    const acc = av - prevAv;
+    for (const fo of fruits) {
+      fo.om += (-0.03 * fo.th - 0.06 * fo.om) * f + acc * 2.6 + (windX - .35) * .0003 * f;
+      fo.th = clamp(fo.th + fo.om * f, -.7, .7);
+      const [bx, by] = bend(fo.p.ax, fo.p.ay);
+      fo.el.style.transform = `translate(${(bx * s - B / 2).toFixed(2)}px,${(by * s).toFixed(2)}px) rotate(${fo.th.toFixed(4)}rad)`;
+    }
+
+    // leaves
+    const left = -ox / s - 40, right = (W - ox) / s + 40, bottom = (H - oy) / s + 40;
+    for (const l of leaves) {
+      if (l.state === 0) { if (l.grow < 1) l.grow = Math.min(1, l.grow + dt / 700); }
+      else if (l.state === 1) {
+        l.vy = Math.min(l.vy + .05 * f, 1.3);
+        l.vx += (windX - l.vx) * .015 * f;
+        l.x += (l.vx + Math.sin(time * l.fq + l.ph) * l.amp) * f;
+        l.y += l.vy * f;
+        l.rot += (l.vr + Math.cos(time * l.fq + l.ph) * .012) * f;
+        const gy = GROUND - l.size * .32;
+        if (l.y >= gy && l.y < gy + 12 && l.x > 20 && l.x < 580) { l.y = gy; l.state = 2; l.t = rnd(2500, 6000); }
+        else if (l.x < left || l.x > right || l.y > bottom) regrow(l);
+      } else if (l.state === 2) {
+        l.t -= dt;
+        l.x += windX * .05 * f; l.rot += windX * .002 * f;
+        if (l.t <= 0) regrow(l);
+      }
+    }
+
+    if (!visible || !ready) { if (visible) { ctx.setTransform(1,0,0,1,0,0); ctx.clearRect(0,0,cv.width,cv.height); drawBranches(); } return; }
+    ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, cv.width, cv.height);
+    drawTreeLeaves(0, en);
+    drawBranches();
+    drawTreeLeaves(1, en);
+    for (const l of leaves) {
+      if (l.state === 1) drawLeaf(l, l.x, l.y, l.rot, 1, 1);
+      else if (l.state === 2) drawLeaf(l, l.x, l.y, l.rot, 1, l.t < 600 ? Math.max(0, l.t / 600) : 1);
+    }
+    ctx.globalAlpha = 1;
+  }
+  requestAnimationFrame(frame);
+  new IntersectionObserver(es => { visible = es[0].isIntersecting; }).observe(hero);
+
+  /* --- interaction --- */
+  let down = null;
+  wrap.addEventListener('pointerdown', e => {
+    const now = performance.now();
+    down = { x: e.clientX, t: now, lx: e.clientX, lt: now, moved: 0 };
+    try { wrap.setPointerCapture(e.pointerId); } catch (_) {}
+  });
+  wrap.addEventListener('pointermove', e => {
+    const now = performance.now();
+    if (down) {
+      const dx = e.clientX - down.lx, dtt = Math.max(1, now - down.lt), sp = Math.abs(dx) / dtt;
+      down.moved += Math.abs(dx);
+      av = clamp(av + dx / s * .00045, -.03, .03);
+      if (sp > .6 && Math.random() < Math.min(1, sp * .5)) shed(sp > 1.5 ? 2 : 1, Math.sign(dx));
+      down.lx = e.clientX; down.lt = now;
+    } else if (e.pointerType === 'mouse') {
+      const dx = e.movementX || 0;
+      av = clamp(av + dx * .000025, -.03, .03);
+      if (Math.abs(dx) > 3 && Math.random() < .025) shed(1, Math.sign(dx));
+    }
+  });
+  const end = e => {
+    if (!down) return;
+    if (e.type === 'pointerup' && down.moved < 6 && performance.now() - down.t < 350) {
+      const r = stage.getBoundingClientRect(), dir = e.clientX < r.left + r.width / 2 ? -1 : 1;
+      av = clamp(av + .028 * dir, -.04, .04);
+      shed(4 + (Math.random() * 3 | 0), dir);
+    }
+    down = null;
+  };
+  wrap.addEventListener('pointerup', end);
+  wrap.addEventListener('pointercancel', end);
+
+  function bigShake() {
+    [0, 125, 250, 375].forEach((d, i) => setTimeout(() => {
+      const dir = i % 2 ? -1 : 1;
+      av = clamp(av + .05 * dir * (RM ? .5 : 1), -.06, .06);
+      shed(RM ? 4 : 11, dir);
+    }, d));
+  }
+  document.getElementById('shakeBtn').addEventListener('click', bigShake);
+  document.addEventListener('keydown', e => {
+    if ((e.key === 's' || e.key === 'S') && !e.metaKey && !e.ctrlKey && !e.altKey &&
+        !/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName || '') && !document.activeElement?.isContentEditable) bigShake();
+  });
+
+  if (!RM) {
+    const breeze = () => {
+      setTimeout(() => {
+        av = clamp(av + rnd(.003, .008) * (Math.random() < .7 ? 1 : -1), -.03, .03);
+        windTarget = rnd(.6, 1.2);
+        shed(1 + (Math.random() * 3 | 0), 1);
+        breeze();
+      }, rnd(3500, 8000));
+    };
+    breeze();
+  }
+})();
+</script>
+
+</body>
+</html>
